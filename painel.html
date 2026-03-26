@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel do Artista</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins&family=Oswald&family=Orbitron&family=Playfair+Display&family=Bebas+Neue&family=Montserrat&family=Raleway&family=Lobster&family=Anton&family=Roboto&family=Ubuntu&family=Pacifico&family=Indie+Flower&family=Quicksand&family=Barlow&family=Nunito&family=Cinzel&family=Exo&family=Kanit&family=Teko&display=swap" rel="stylesheet">
+
+<style>
+body{margin:0;background:#111;color:white;font-family:Arial;transition:0.4s;}
+header{background:#000;padding:15px;text-align:center;font-size:22px;font-weight:bold;border-bottom:2px solid #1abc9c;}
+.container{padding:20px}
+button{background:#1abc9c;color:white;border:none;padding:12px;border-radius:6px;cursor:pointer;width:100%;margin-top:10px;}
+input,select{width:100%;padding:10px;margin:5px 0;border-radius:5px;border:none;}
+.box{background:#222;padding:15px;border-radius:10px;margin-bottom:20px;}
+.musica-item{background:#222;padding:10px;margin:10px 0;border-radius:10px;}
+.player-box{background:rgba(0,0,0,0.85);padding:10px;border-radius:10px;margin-top:10px;}
+audio{width:100%;}
+#modalPerfil,#modalBusca,#modalMusicas{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#000;padding:20px;overflow:auto;}
+.opcao{padding:10px;margin:5px 0;background:#222;border-radius:5px;cursor:pointer;}
+.fundo{width:70px;height:70px;border-radius:10px;margin:5px;display:inline-block;cursor:pointer;}
+</style>
+</head>
+
+<body>
+<header>PORTAL DO ARTISTA</header>
+
+<div class="container">
+
+<h1>Painel do Artista</h1>
+
+<button onclick="abrirModal()">Editar Perfil</button>
+<button onclick="abrirMusicas()">Editar Músicas Carregadas</button>
+
+<div class="box">
+<h2>Adicionar Música</h2>
+
+<input id="nomeMusica" placeholder="Nome da música">
+<input id="nomeArtista" placeholder="Nome do artista">
+
+<select id="generoMusica">
+<option>Sertanejo</option>
+<option>Pagode</option>
+<option>Funk</option>
+<option>Rap</option>
+<option>Pop</option>
+<option>Reggae</option>
+<option>Forró</option>
+<option>Samba</option>
+<option>Rock</option>
+</select>
+
+<select id="subgeneroMusica">
+<option>Romântico</option>
+<option>Dançante</option>
+<option>Vanera</option>
+</select>
+
+<select id="statusMusica">
+<option>Disponível</option>
+<option>Reservada</option>
+<option>VIP</option>
+</select>
+
+<input type="text" id="valorLiberacao" placeholder="Valor de liberação ou a combinar">
+<input type="text" id="liberacaoExclusiva" placeholder="Liberação com exclusividade - valor ou a combinar">
+<label><input type="checkbox" id="vipCheckbox"> VIP</label>
+
+<input type="file" id="arquivoMP3" accept="audio/mpeg">
+<input type="file" id="capaMusica" accept="image/png, image/jpeg">
+
+<button onclick="abrirBusca()">Buscar Música no Banco</button>
+<button onclick="subirMusica()">Salvar Música</button>
+</div>
+
+</div>
+
+<!-- MODAL PERFIL -->
+<div id="modalPerfil">
+<h2>Editar Perfil</h2>
+
+<input id="nomePerfil" placeholder="Nome do artista">
+<input id="contatoPerfil" placeholder="WhatsApp">
+<input id="emailPerfil" placeholder="Email">
+<input id="instagramPerfil" placeholder="Instagram">
+<input id="tiktokPerfil" placeholder="TikTok">
+<input id="spotifyPerfil" placeholder="Spotify">
+<input type="file" id="capaArtistaPerfil" accept="image/png, image/jpeg">
+
+<select id="profissaoPerfil">
+<option>Cantor</option>
+<option>Compositor</option>
+<option>Banda</option>
+<option>Grupo</option>
+<option>Dupla</option>
+</select>
+
+<h3>Fonte</h3>
+<div id="fontesBox"></div>
+
+<h3>Cor</h3>
+<div id="coresBox"></div>
+
+<h3>Layout</h3>
+<div id="fundos"></div>
+
+<h3>Player</h3>
+<div id="playerBox"></div>
+
+<button onclick="salvarPerfil()">Salvar Perfil</button>
+<button onclick="fecharModal()">Fechar</button>
+</div>
+
+<!-- MODAL BUSCA -->
+<div id="modalBusca">
+<h2>Buscar Música</h2>
+<input id="busca" placeholder="Digite o nome da música">
+<div id="listaMusicas"></div>
+<button onclick="fecharBusca()">Fechar</button>
+</div>
+
+<!-- MODAL MÚSICAS CARREGADAS -->
+<div id="modalMusicas">
+<h2>Músicas Carregadas</h2>
+<div id="listaMusicasCarregadas"></div>
+<button onclick="fecharMusicas()">Fechar</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+const SUPABASE_URL = "https://mhvcyeiwupgreuiqilkt.supabase.co";
+const SUPABASE_KEY = "sb_publishable_uT6SfDEyOShsI7zrPJJCDA_vyqm0Eka";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let fonteSelecionada=null, corSelecionada=null, fundoSelecionado=null, playerSelecionado=null, musicaSelecionadaURL=null;
+
+// MODAIS
+function abrirModal(){modalPerfil.style.display="block";}
+function fecharModal(){modalPerfil.style.display="none";}
+function abrirBusca(){modalBusca.style.display="block";carregarMusicas();}
+function fecharBusca(){modalBusca.style.display="none";}
+function abrirMusicas(){modalMusicas.style.display="block";carregarMusicasCarregadas();}
+function fecharMusicas(){modalMusicas.style.display="none";}
+
+// ================= BUSCA MÚSICAS =================
+async function carregarMusicas(){
+const { data, error } = await supabaseClient.from("musicas").select("id,nome,artista,status,mp3_url,capa_url").order("id",{ascending:false});
+if(error){alert("Erro ao buscar músicas: "+error.message); return;}
+if(!data || data.length ===0){listaMusicas.innerHTML="Nenhuma música encontrada"; return;}
+renderMusicas(data);
+}
+
+function renderMusicas(lista){
+listaMusicas.innerHTML="";
+lista.forEach(m=>{
+let mp3Link = m.mp3_url ? m.mp3_url + "?t=" + Date.now() : "";
+let capa = m.capa_url ? m.capa_url + "?t=" + Date.now() : "";
+listaMusicas.innerHTML += `
+<div class="musica-item">
+<b>${m.nome}</b><br>
+<small>${m.artista}</small><br>
+<span>${m.status==="VIP"?"VIP":"Livre"}</span>
+${capa?`<img src="${capa}" style="width:100%;border-radius:10px;margin-top:10px;">`:''}
+<div class="player-box">
+<audio controls src="${mp3Link}"></audio>
+</div>
+<button onclick="selecionarMusica('${mp3Link}')">Selecionar</button>
+</div>`;
+});
+}
+
+busca.addEventListener("input", async ()=>{
+const texto = busca.value;
+const { data } = await supabaseClient.from("musicas").select("*").ilike("nome", `%${texto}%`);
+renderMusicas(data);
+});
+
+function selecionarMusica(url){musicaSelecionadaURL=url;alert("Música selecionada!");fecharBusca();}
+
+// ================= MÚSICAS CARREGADAS =================
+async function carregarMusicasCarregadas(){
+const { data, error } = await supabaseClient.from("musicas").select("id,nome,artista,status,mp3_url,capa_url").order("id",{ascending:false});
+if(error){listaMusicasCarregadas.innerHTML="Erro: "+error.message; return;}
+if(!data || data.length===0){listaMusicasCarregadas.innerHTML="Nenhuma música carregada"; return;}
+listaMusicasCarregadas.innerHTML="";
+data.forEach(m=>{
+let mp3Link = m.mp3_url ? m.mp3_url + "?t=" + Date.now() : "";
+let capa = m.capa_url ? m.capa_url + "?t=" + Date.now() : "";
+listaMusicasCarregadas.innerHTML+=`
+<div class="musica-item">
+<b>${m.nome}</b> - <small>${m.artista}</small><br>
+<span>${m.status==="VIP"?"VIP":"Livre"}</span>
+<div class="player-box">
+<audio controls src="${mp3Link}"></audio>
+</div>
+${capa?`<img src="${capa}" style="width:100%;border-radius:10px;margin-top:10px;">`:''}
+<button onclick="excluirMusica(${m.id})">🗑 Excluir</button>
+</div>`;
+});
+}
+
+async function excluirMusica(id){
+if(!confirm("Deseja realmente excluir esta música?")) return;
+await supabaseClient.from("musicas").delete().eq("id",id);
+carregarMusicasCarregadas();
+alert("Música excluída!");
+}
+
+// ================= PERFIL =================
+const fontes=["Poppins","Oswald","Orbitron","Playfair Display","Bebas Neue","Montserrat","Raleway","Lobster","Anton","Roboto","Ubuntu","Pacifico","Indie Flower","Quicksand","Barlow","Nunito","Cinzel","Exo","Kanit","Teko"];
+const cores=[["Vermelho","#e74c3c"],["Azul","#3498db"],["Verde","#2ecc71"],["Amarelo","#f1c40f"],["Roxo","#9b59b6"],["Ciano","#1abc9c"],["Laranja","#e67e22"],["Branco","#ffffff"],["Cinza","#95a5a6"],["Rosa","#fd79a8"],["Dourado","#f39c12"],["Prata","#bdc3c7"],["Marinho","#2c3e50"],["Coral","#ff7675"],["Lima","#00b894"],["Violeta","#6c5ce7"],["Turquesa","#00cec9"],["Chocolate","#8e5c42"],["Preto","#000000"],["Off White","#ecf0f1"]];
+
+fontes.forEach(f=>{
+let btn=document.createElement("div"); btn.className="opcao"; btn.innerText=f; btn.style.fontFamily=f;
+btn.onclick=()=>{fonteSelecionada=f; document.body.style.fontFamily=f;};
+fontesBox.appendChild(btn);
+});
+
+cores.forEach(c=>{
+let btn=document.createElement("div"); btn.className="opcao"; btn.innerText=c[0]; btn.style.color=c[1];
+btn.onclick=()=>{corSelecionada=c[1]; document.body.style.color=c[1];};
+coresBox.appendChild(btn);
+});
+
+cores.forEach(c=>{
+let div=document.createElement("div"); div.className="fundo";
+div.style.background=`linear-gradient(135deg,#000,${c[1]})`;
+div.onclick=()=>{fundoSelecionado=div.style.background;document.body.style.background=fundoSelecionado;};
+fundos.appendChild(div);
+});
+
+const players=[{name:"Padrão",style:"background:#000;"},{name:"Glass",style:"background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);"},
+{name:"Neon",style:"background:#000;box-shadow:0 0 10px #1abc9c;"},{name:"Minimal",style:"background:#111;border:1px solid #555;"}];
+
+players.forEach(p=>{
+let btn=document.createElement("div"); btn.className="opcao";
+btn.innerHTML=`<div style="padding:10px;${p.style}">${p.name}<audio controls></audio></div>`;
+btn.onclick=()=>{playerSelecionado=p.name;};
+playerBox.appendChild(btn);
+});
+
+async function carregarPerfil(){
+const { data } = await supabaseClient.from("perfil").select("*").eq("id",1).single();
+if(!data) return;
+nomePerfil.value=data.nome||"";
+contatoPerfil.value=data.contato||"";
+emailPerfil.value=data.email||"";
+instagramPerfil.value=data.instagram||"";
+tiktokPerfil.value=data.tiktok||"";
+spotifyPerfil.value=data.spotify||"";
+profissaoPerfil.value=data.profissao||"";
+document.body.style.fontFamily=data.fonte||"Arial";
+document.body.style.color=data.cor||"#fff";
+if(data.layout) document.body.style.background=data.layout;
+fonteSelecionada=data.fonte; corSelecionada=data.cor; fundoSelecionado=data.layout; playerSelecionado=data.player;
+}
+carregarPerfil();
+
+// SALVAR PERFIL
+async function salvarPerfil(){
+const capa = capaArtistaPerfil.files[0];
+let capa_url = null;
+if(capa){
+  const { data: capaData, error: capaError } = await supabaseClient.storage.from('musicas').upload(`capas/${Date.now()}_${capa.name}`, capa, { cacheControl: '3600', upsert: true });
+  if(capaError){alert("Erro imagem: "+capaError.message); return;}
+  const { data: publicData, error: urlError } = supabaseClient.storage.from('musicas').getPublicUrl(capaData.path);
+  if(urlError){alert("Erro ao gerar URL pública: "+urlError.message); return;}
+  capa_url = publicData.publicUrl + "?t=" + Date.now();
+}
+
+const { data: atual } = await supabaseClient.from("perfil").select("*").eq("id",1).single();
+const { error } = await supabaseClient.from("perfil").upsert([{
+id:1,
+nome:nomePerfil.value||atual?.nome,
+profissao:profissaoPerfil.value||atual?.profissao,
+contato:contatoPerfil.value||atual?.contato,
+email:emailPerfil.value||atual?.email,
+instagram:instagramPerfil.value||atual?.instagram,
+tiktok:tiktokPerfil.value||atual?.tiktok,
+spotify:spotifyPerfil.value||atual?.spotify,
+fonte:fonteSelecionada||atual?.fonte,
+cor:corSelecionada||atual?.cor,
+layout:fundoSelecionado||atual?.layout,
+player:playerSelecionado||atual?.player,
+capa_url: capa_url || atual?.capa_url
+}]);
+if(error){alert("Erro: "+error.message); return;}
+alert("Perfil salvo!");
+window.location.href="index.html";
+}
+
+// SUBIR MÚSICA
+async function subirMusica(){
+const nome = nomeMusica.value; 
+const artista = nomeArtista.value || "Artista";
+const genero = generoMusica.value; 
+const sub = subgeneroMusica.value;
+const status = statusMusica.value;
+const vip = vipCheckbox.checked;
+const valorLiberacaoVal = valorLiberacao.value || "A combinar";
+const liberacaoExclusivaVal = liberacaoExclusiva.value || "A combinar";
+
+const mp3 = arquivoMP3.files[0]; 
+const capa = capaMusica.files[0];
+if(!nome||!mp3||!capa){alert("Preencha todos os campos!");return;}
+
+// Upload MP3
+const { data: mp3Data, error: mp3Error } = await supabaseClient.storage.from('musicas').upload(`mp3/${Date.now()}_${mp3.name}`, mp3, { cacheControl: '3600', upsert: true });
+if(mp3Error){alert("Erro MP3: "+mp3Error.message);return;}
+const { data: mp3PublicData, error: mp3UrlError } = supabaseClient.storage.from('musicas').getPublicUrl(mp3Data.path);
+if(mp3UrlError){alert("Erro ao gerar URL MP3: "+mp3UrlError.message); return;}
+const mp3_url = mp3PublicData.publicUrl + "?t=" + Date.now();
+
+// Upload Capa
+const { data: capaData, error: capaError } = await supabaseClient.storage.from('musicas').upload(`capas/${Date.now()}_${capa.name}`, capa, { cacheControl: '3600', upsert: true });
+if(capaError){alert("Erro imagem: "+capaError.message);return;}
+const { data: capaPublicData, error: capaUrlError } = supabaseClient.storage.from('musicas').getPublicUrl(capaData.path);
+if(capaUrlError){alert("Erro ao gerar URL capa: "+capaUrlError.message); return;}
+const capa_url = capaPublicData.publicUrl + "?t=" + Date.now();
+
+// Inserir no banco
+const { error: insertError } = await supabaseClient.from('musicas').insert([{
+nome,
+artista,
+genero,
+subgenero: sub,
+status,
+mp3_url,
+capa_url,
+vip,
+valor_liberacao: valorLiberacaoVal,
+valor_exclusivo: liberacaoExclusivaVal
+}]);
+
+if(insertError){alert("Erro ao salvar música: "+insertError.message); return;}
+
+alert("Música salva com sucesso!");
+window.location.href=vip ? "vip.html" : "index.html";
+}
+</script>
+</body>
+</html>

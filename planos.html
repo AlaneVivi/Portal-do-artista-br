@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal do Artista - Planos</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin:0;
+    padding:0;
+    background: linear-gradient(135deg,#000,#0a0a0a,#1a1a00);
+    color:white;
+}
+.header { 
+    text-align:center; 
+    padding:20px; 
+    background:#111;
+}
+.header h1 { margin:0; font-size:2rem; color:#f5d76e; }
+.header .profissao { color:#f5d76e; margin:5px 0; }
+.top-buttons { text-align:center; margin:10px 0; }
+.top-buttons button {
+    margin:5px; padding:8px 15px; border:none; border-radius:5px;
+    background:#f5d76e; color:#000; font-weight:bold; cursor:pointer;
+}
+.planos-container {
+    display:flex; flex-wrap:wrap; justify-content:center; gap:20px; margin:20px;
+}
+.plano-card {
+    background:rgba(255,255,255,0.05);
+    padding:15px;
+    border-radius:10px;
+    width:300px;
+    display:flex; flex-direction:column; align-items:center;
+    text-align:center;
+}
+.plano-card h2 { margin:10px 0; color:#f5d76e; }
+.plano-card .valor { font-size:1.3rem; font-weight:bold; margin:5px 0; color:#25D366; }
+.plano-card p { margin:5px 0; }
+.amostras {
+    display:flex; justify-content:center; gap:5px; margin:10px 0;
+}
+.amostra {
+    width:50px; height:50px;
+    border-radius:5px;
+    background:#222;
+    display:flex; justify-content:center; align-items:center;
+    font-size:0.8rem;
+    color:#f5d76e;
+}
+.plano-card button {
+    margin-top:10px; padding:10px 15px;
+    border:none; border-radius:5px;
+    background:#f5d76e; color:#000;
+    font-weight:bold; cursor:pointer;
+}
+.frase-efeito { font-style:italic; margin:10px 0; font-size:0.9rem; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Portal do Artista</h1>
+    <h2 class="profissao">Compositor</h2>
+    <div class="top-buttons">
+        <button onclick="window.location.href='login.html'">Login</button>
+        <button onclick="abrirVIP()">VIP</button>
+    </div>
+</div>
+
+<div class="planos-container">
+
+    <div class="plano-card">
+        <h2>Free Experimental</h2>
+        <div class="valor">R$0</div>
+        <p>2 músicas</p>
+        <p>10% de personalização</p>
+        <div class="amostras">
+            <div class="amostra">Capa</div>
+            <div class="amostra">Bio</div>
+        </div>
+        <p class="frase-efeito">Experimente e veja seu trabalho ganhar destaque!</p>
+        <button onclick="contratarPlano('free')">Contrate Agora</button>
+    </div>
+
+    <div class="plano-card">
+        <h2>Básico</h2>
+        <div class="valor">R$20</div>
+        <p>20 músicas</p>
+        <p>20% de personalização</p>
+        <div class="amostras">
+            <div class="amostra">Capa</div>
+            <div class="amostra">Bio</div>
+            <div class="amostra">Playlist</div>
+        </div>
+        <p class="frase-efeito">Comece a profissionalizar seu trabalho agora!</p>
+        <button onclick="contratarPlano('basico')">Contrate Agora</button>
+    </div>
+
+    <div class="plano-card">
+        <h2>Intermediário</h2>
+        <div class="valor">R$50</div>
+        <p>70 músicas</p>
+        <p>50% de personalização</p>
+        <div class="amostras">
+            <div class="amostra">Capa</div>
+            <div class="amostra">Bio</div>
+            <div class="amostra">Playlist</div>
+            <div class="amostra">Tema</div>
+        </div>
+        <p class="frase-efeito">Impulsione sua carreira com visibilidade profissional!</p>
+        <button onclick="contratarPlano('intermediario')">Contrate Agora</button>
+    </div>
+
+    <div class="plano-card">
+        <h2>Pro</h2>
+        <div class="valor">R$70</div>
+        <p>100 músicas</p>
+        <p>70% de personalização</p>
+        <div class="amostras">
+            <div class="amostra">Capa</div>
+            <div class="amostra">Bio</div>
+            <div class="amostra">Playlist</div>
+            <div class="amostra">Tema</div>
+            <div class="amostra">Banner</div>
+        </div>
+        <p class="frase-efeito">Seu perfil profissional com máxima qualidade!</p>
+        <button onclick="contratarPlano('pro')">Contrate Agora</button>
+    </div>
+
+    <div class="plano-card">
+        <h2>Premium</h2>
+        <div class="valor">R$100</div>
+        <p>200 músicas</p>
+        <p>100% de personalização</p>
+        <div class="amostras">
+            <div class="amostra">Capa</div>
+            <div class="amostra">Bio</div>
+            <div class="amostra">Playlist</div>
+            <div class="amostra">Tema</div>
+            <div class="amostra">Banner</div>
+            <div class="amostra">Extras</div>
+        </div>
+        <p class="frase-efeito">Transforme seu perfil em portfólio profissional completo!</p>
+        <button onclick="contratarPlano('premium')">Contrate Agora</button>
+    </div>
+
+</div>
+
+<script>
+function abrirVIP(){ let senha = prompt("Digite a senha VIP:"); if(senha==="0000"){window.location.href="vip.html"}else{alert("Senha incorreta");}}
+function contratarPlano(plano){ window.location.href="pagamento.html?plano="+plano; }
+</script>
+
+</body>
+</html>

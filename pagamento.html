@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planos - Portal do Artista</title>
+<style>
+body {
+    margin:0; padding:0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#000,#0a0a0a,#1a1a00);
+    color:white;
+}
+.header { text-align:center; padding:20px; }
+.header h1 { font-size:2.5rem; color:#f5d76e; }
+.planos-container {
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:20px;
+    margin:20px;
+}
+.plano-card {
+    background: rgba(255,255,255,0.05);
+    border-radius:10px;
+    padding:20px;
+    width:300px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    transition: transform 0.2s;
+}
+.plano-card:hover { transform: scale(1.03); }
+.plano-card h2 { color:#f5d76e; margin-bottom:10px; }
+.plano-card p { text-align:center; line-height:1.4; margin-bottom:10px; }
+.plano-card .preco { font-size:1.5rem; font-weight:bold; margin-bottom:10px; }
+.plano-card button {
+    background:#f5d76e; color:#000;
+    border:none; padding:10px 20px;
+    border-radius:5px; font-weight:bold;
+    cursor:pointer;
+    transition: background 0.2s;
+}
+.plano-card button:hover { background:#d4b74e; }
+.frase { font-style:italic; font-size:0.9rem; text-align:center; margin-top:5px; color:#ccc; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Escolha seu Plano</h1>
+    <p style="text-align:center;">Profissionalize seu trabalho como artista com nossos planos. Cada plano é pensado para que você tenha mais liberdade e destaque.</p>
+</div>
+
+<div class="planos-container">
+
+    <div class="plano-card" data-plano="free">
+        <h2>Free (Experimental)</h2>
+        <div class="preco">R$0</div>
+        <p>Inclui 2 músicas para testar a plataforma.<br>Opções básicas de personalização de perfil.</p>
+        <p class="frase">Ideal para começar a explorar e conhecer seu potencial como artista!</p>
+        <button onclick="confirmarCompra('free')">Contratar Free</button>
+    </div>
+
+    <div class="plano-card" data-plano="basico">
+        <h2>Básico</h2>
+        <div class="preco">R$20</div>
+        <p>Inclui 20 músicas.<br>20% de personalização do perfil.</p>
+        <p class="frase">Comece a destacar seu trabalho e mostrar sua identidade como artista.</p>
+        <button onclick="confirmarCompra('basico')">Contratar Básico</button>
+    </div>
+
+    <div class="plano-card" data-plano="intermediario">
+        <h2>Intermediário</h2>
+        <div class="preco">R$50</div>
+        <p>Inclui 70 músicas.<br>50% de personalização do perfil.</p>
+        <p class="frase">Perfeito para artistas que querem crescer e mostrar um trabalho consistente.</p>
+        <button onclick="confirmarCompra('intermediario')">Contratar Intermediário</button>
+    </div>
+
+    <div class="plano-card" data-plano="pro">
+        <h2>Pro</h2>
+        <div class="preco">R$70</div>
+        <p>Inclui 100 músicas.<br>70% de personalização do perfil.</p>
+        <p class="frase">Para artistas que desejam profissionalizar seu portfólio e impressionar clientes.</p>
+        <button onclick="confirmarCompra('pro')">Contratar Pro</button>
+    </div>
+
+    <div class="plano-card" data-plano="premium">
+        <h2>Premium</h2>
+        <div class="preco">R$100</div>
+        <p>Inclui 200 músicas.<br>100% de personalização do perfil.</p>
+        <p class="frase">O plano completo para artistas que buscam total liberdade e profissionalização máxima.</p>
+        <button onclick="confirmarCompra('premium')">Contratar Premium</button>
+    </div>
+
+</div>
+
+<script>
+function confirmarCompra(plano){
+    // Aqui você pode integrar futuramente com o sistema de pagamento
+    alert("Você selecionou o plano: " + plano + "\nNa próxima etapa será processado o pagamento.");
+    // Exemplo de redirecionamento futuro:
+    // window.location.href = "checkout.html?plano=" + plano;
+}
+</script>
+
+</body>
+</html>

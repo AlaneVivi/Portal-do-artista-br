@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal do Artista</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin:0;
+    padding:0;
+    background: linear-gradient(135deg,#000,#0a0a0a,#1a1a00);
+    color:white;
+}
+.header { text-align:center; padding:20px; }
+.portal-titulo { color:white; }
+.profissao { opacity:0.7; }
+.nome-artista { color:#f5d76e; font-size:2.5rem; }
+
+.top-buttons { text-align:center; margin:10px 0; }
+.top-buttons button {
+    margin:5px; padding:8px 15px; border:none; border-radius:5px;
+    background:#f5d76e; color:#000; font-weight:bold; cursor:pointer;
+}
+
+.capa-artista {
+    width:100%;
+    max-width:600px;
+    height:250px;
+    margin:20px auto;
+    border-radius:10px;
+    overflow:hidden;
+    background:#222;
+}
+
+.filtros { text-align:center; margin:20px 0; }
+.filtros button {
+    margin:5px; padding:8px 12px; border:none;
+    border-radius:5px; background:#333; color:white; cursor:pointer;
+}
+.filtros button.active { background:#f5d76e; color:#000; }
+
+/* Área VIP */
+.vip-area {
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    margin:30px 10px;
+    padding:20px;
+    border-radius:15px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.95)), url('https://i.ibb.co/4V6pZtR/instruments-pattern.png') repeat;
+    background-size: contain;
+}
+.vip-title {
+    font-size:2.5rem;
+    color:#f5d76e;
+    font-weight:bold;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.7);
+    margin-bottom:20px;
+}
+
+.players {
+    display:flex; flex-wrap:wrap; justify-content:center; gap:20px; width:100%;
+}
+.player-card {
+    background:rgba(255,255,255,0.05);
+    width:260px; border-radius:10px; overflow:hidden;
+    text-align:center; padding:10px;
+}
+.player-card img { width:100%; height:150px; object-fit:cover; }
+.player-card h3, .player-card p { margin:5px 0; }
+.player-card button {
+    margin-top:10px; padding:8px 12px; border:none;
+    border-radius:5px; background:#f5d76e; color:#000;
+    cursor:pointer; font-weight:bold;
+}
+audio { width:100%; margin-top:10px; }
+
+/* Senha */
+.senha-container {
+    text-align:center; margin:20px 0;
+}
+.senha-container input {
+    padding:10px; width:120px; border-radius:5px; border:none; margin-right:10px;
+    font-size:1rem;
+}
+.senha-container button {
+    padding:10px 15px; border:none; border-radius:5px;
+    background:#f5d76e; color:#000; cursor:pointer; font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1 class="portal-titulo">Portal do Artista</h1>
+  <h2 class="profissao">Compositor</h2>
+  <h1 class="nome-artista">Alan Ribeiro</h1>
+</div>
+
+<div class="capa-artista"></div>
+
+<div class="top-buttons">
+    <button onclick="window.location.href='index.html'">Home</button>
+</div>
+
+<div class="senha-container">
+    <input type="password" id="senha" placeholder="Digite a senha">
+    <button onclick="verificarSenha()">Acessar VIP</button>
+</div>
+
+<div class="vip-area">
+    <div class="vip-title">Área VIP</div>
+    <div class="players"></div>
+</div>
+
+<div class="filtros">
+  <button class="active" data-genero="Sertanejo">Sertanejo</button>
+  <button class="active" data-genero="Piseiro">Piseiro</button>
+  <button class="active" data-genero="Pagode">Pagode</button>
+  <button class="active" data-genero="Forró">Forró</button>
+  <button class="active" data-genero="Samba">Samba</button>
+  <button class="active" data-genero="Rock">Rock</button>
+  <button class="active" data-genero="Rap">Rap</button>
+  <button class="active" data-genero="Funk">Funk</button>
+  <button class="active" data-genero="Arrocha">Arrocha</button>
+  <button class="active" data-genero="MPB">MPB</button>
+  <button class="active" data-genero="Pop">Pop</button>
+  <button class="active" data-genero="Reggae">Reggae</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://mhvcyeiwupgreuiqilkt.supabase.co";
+const SUPABASE_KEY = "sb_publishable_uT6SfDEyOShsI7zrPJJCDA_vyqm0Eka";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let senhaCorreta = "0000"; // Inicial, editável no painel
+
+function verificarSenha(){
+    const input = document.getElementById("senha").value;
+    if(input === senhaCorreta){
+        document.querySelector(".senha-container").style.display = "none";
+        document.querySelector(".vip-area").style.display = "flex";
+        carregarMusicasVIP();
+    } else {
+        alert("Senha incorreta!");
+    }
+}
+
+// Carregar músicas VIP
+async function carregarMusicasVIP(){
+    const { data, error } = await supabaseClient
+        .from('musicas')
+        .select('*')
+        .eq('vip', true)
+        .order('id',{ascending:false});
+
+    if(error){
+        console.log("Erro músicas VIP:", error);
+        return;
+    }
+
+    const container = document.querySelector(".vip-area .players");
+    container.innerHTML = "";
+
+    if(!data || data.length === 0){
+        container.innerHTML = "<p>Sem músicas VIP ainda</p>";
+        return;
+    }
+
+    data.forEach(m=>{
+        const card = document.createElement("div");
+        card.className = "player-card";
+        card.dataset.genero = m.genero || "Sem gênero";
+
+        card.innerHTML = `
+        <img src="${m.capa_url}">
+        <h3>${m.nome}</h3>
+        <p>${m.artista}</p>
+        <audio controls src="${m.mp3_url}"></audio>
+        <button onclick="window.open('https://wa.me/5521999999999?text=Tenho interesse na música ${encodeURIComponent(m.nome)}')">
+        Tenho interesse
+        </button>
+        `;
+        container.appendChild(card);
+    });
+
+    // Filtro por gênero
+    const botoes = document.querySelectorAll(".filtros button");
+    botoes.forEach(btn=>{
+        btn.addEventListener("click",()=>{
+            btn.classList.toggle("active");
+            const ativos = Array.from(botoes)
+                .filter(b=>b.classList.contains("active"))
+                .map(b=>b.dataset.genero);
+            document.querySelectorAll(".player-card").forEach(card=>{
+                card.style.display = ativos.includes(card.dataset.genero) ? "block" : "none";
+            });
+        });
+    });
+}
+
+// Carregar perfil
+async function carregarPerfil(){
+    const { data, error } = await supabaseClient
+        .from('perfil')
+        .select('*')
+        .order('id',{ascending:false})
+        .limit(1);
+
+    if(error){ console.log("Erro perfil:", error); return; }
+    if(!data || data.length === 0) return;
+
+    const perfil = data[0];
+    document.querySelector(".nome-artista").innerText = perfil.nome || "Artista";
+    document.querySelector(".profissao").innerText = perfil.profissao || "Artista";
+    document.querySelector(".nome-artista").style.fontFamily = perfil.fonte || "Arial";
+    document.querySelector(".nome-artista").style.color = perfil.cor || "#f5d76e";
+    document.body.style.background = perfil.layout || "#000";
+
+    const capaDiv = document.querySelector(".capa-artista");
+    if(perfil.capa_url){
+        const img = document.createElement("img");
+        img.src = perfil.capa_url;
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "cover";
+        capaDiv.innerHTML = "";
+        capaDiv.appendChild(img);
+    }
+}
+
+carregarPerfil();
+</script>
+    <script>
+async function carregarPerfil(){
+
+const { data, error } = await supabaseClient
+.from("perfil")
+.select("*")
+.eq("id",1)
+.single();
+
+if(error || !data){
+console.log("Perfil não encontrado");
+return;
+}
+
+// APLICAR NOME (se existir elemento)
+if(document.getElementById("nomeArtista")){
+document.getElementById("nomeArtista").innerText = data.nome || "";
+}
+
+// FONTE
+document.body.style.fontFamily = data.fonte || "Arial";
+
+// COR
+document.body.style.color = data.cor || "#ffffff";
+
+// FUNDO
+if(data.layout){
+document.body.style.background = data.layout;
+}
+
+}
+
+carregarPerfil();
+</script>
+
+</body>
+</html>

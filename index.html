@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal do Artista</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin:0;
+    padding:0;
+    background: linear-gradient(135deg,#000,#0a0a0a,#1a1a00);
+    color:white;
+}
+.header { text-align:center; padding:20px; }
+.nome-artista { color:#f5d76e; font-size:2.5rem; }
+
+.top-buttons { text-align:center; margin:10px 0; }
+.top-buttons button {
+    margin:5px; padding:8px 15px; border:none; border-radius:5px;
+    background:#f5d76e; color:#000; font-weight:bold; cursor:pointer;
+}
+
+.capa-artista {
+    width:100%;
+    max-width:600px;
+    height:250px;
+    margin:20px auto;
+    border-radius:10px;
+    overflow:hidden;
+    background:#222;
+}
+
+.contatos {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+  gap:12px;
+  max-width:600px;
+  margin:20px auto;
+}
+
+.contato-card {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:10px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.05);
+  font-size:14px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.contato-card span { display:block; line-height:1.2; }
+.instagram { color:#E1306C; }
+.spotify { color:#1DB954; }
+.whatsapp { color:#25D366; }
+.email { color:#f5d76e; }
+.tiktok { color:#fff; }
+
+.filtros { text-align:center; margin:20px 0; }
+.filtros button {
+    margin:5px;
+    padding:8px 12px;
+    border:none;
+    border-radius:5px;
+    background:#f5d76e;
+    color:#000;
+    cursor:pointer;
+    font-weight:bold;
+}
+.filtros button.off { background:#333; color:#999; }
+
+.players {
+    display:flex; flex-wrap:wrap; justify-content:center;
+    gap:20px; margin-bottom:50px;
+}
+.player-card {
+    background:rgba(255,255,255,0.05);
+    width:260px; border-radius:10px;
+    text-align:center; padding:10px;
+}
+.player-card img { width:100%; height:150px; object-fit:cover; }
+
+#btnNotificacao {
+    position:fixed;
+    top:10px;
+    right:10px;
+    padding:10px 15px;
+    border:none;
+    border-radius:50px;
+    background:#f5d76e;
+    color:#000;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* Container de notificações do sino */
+#notificacoesContainer {
+    display: none;
+    position: fixed;
+    top:50px;
+    right:10px;
+    width:320px;
+    max-height: 400px;
+    overflow-y:auto;
+    background: rgba(0,0,0,0.9);
+    border-radius:10px;
+    padding:10px;
+    z-index:9999;
+}
+
+/* Modais */
+.modal-planos, .modal-interesse, .modal-mensagem {
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.9);
+    justify-content:center;
+    align-items:center;
+}
+
+.modal-planos .box, .modal-interesse .box, .modal-mensagem .box {
+    background:#111;
+    padding:20px;
+    border-radius:10px;
+    width:90%;
+    max-width:400px;
+    color:white;
+}
+
+.plano, .modal-interesse input, .modal-interesse textarea {
+    width:100%;
+}
+
+.plano {
+    background:rgba(255,255,255,0.05);
+    padding:10px;
+    margin:10px 0;
+    border-radius:8px;
+}
+
+.plano button, .modal-interesse button, .modal-mensagem button {
+    margin-top:5px;
+    width:100%;
+    background:#f5d76e;
+    border:none;
+    padding:8px;
+    border-radius:5px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.modal-interesse input, .modal-interesse textarea {
+    padding:8px;
+    margin:5px 0;
+    border-radius:5px;
+    border:none;
+    background:#222;
+    color:white;
+}
+
+.modal-interesse textarea, .modal-mensagem textarea { resize:none; }
+.modal-mensagem textarea { background:#222; color:white; padding:8px; margin:5px 0; border-radius:5px; border:none;}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>Portal do Artista</h1>
+  <h2 class="profissao">Compositor</h2>
+  <h1 class="nome-artista">Alan Ribeiro</h1>
+</div>
+
+<div class="top-buttons">
+    <button onclick="window.location.href='login.html'">Login</button>
+    <button onclick="Blindadas.abrirVIP()">VIP</button>
+    <button onclick="Blindadas.abrirPlanos()">Planos</button>
+</div>
+
+<div class="capa-artista" id="capaArtista"></div>
+
+<div class="contatos">
+  <div class="contato-card whatsapp">📞 <span id="contatoTelefone"></span></div>
+  <div class="contato-card instagram">📸 <span id="contatoInstagram"></span></div>
+  <div class="contato-card email">✉️ <span id="contatoEmail"></span></div>
+  <div class="contato-card spotify">🎵 <span id="contatoSpotify"></span></div>
+  <div class="contato-card tiktok">🎶 <span id="contatoTiktok"></span></div>
+</div>
+
+<div class="filtros">
+  <button data-genero="Sertanejo">Sertanejo</button>
+  <button data-genero="Piseiro">Piseiro</button>
+  <button data-genero="Forró">Forró</button>
+  <button data-genero="Pagode">Pagode</button>
+  <button data-genero="Samba">Samba</button>
+  <button data-genero="MPB">MPB</button>
+  <button data-genero="Pop">Pop</button>
+  <button data-genero="Rock">Rock</button>
+  <button data-genero="Funk">Funk</button>
+  <button data-genero="Rap">Rap</button>
+  <button data-genero="Arrocha">Arrocha</button>
+  <button data-genero="Reggae">Reggae</button>
+</div>
+
+<div class="players"></div>
+
+<button id="btnNotificacao">🔔 0</button>
+<div id="notificacoesContainer"></div>
+
+<!-- PLANOS -->
+<div class="modal-planos" id="modalPlanos">
+  <div class="box">
+    <h3>Planos</h3>
+    <div class="plano"><b>Free</b><br>2 músicas - R$0<button onclick="Blindadas.contratarPlano('free')">Contratar</button></div>
+    <div class="plano"><b>Básico</b><br>20 músicas - R$20<button onclick="Blindadas.contratarPlano('basico')">Contratar</button></div>
+    <div class="plano"><b>Intermediário</b><br>70 músicas - R$50<button onclick="Blindadas.contratarPlano('intermediario')">Contratar</button></div>
+    <div class="plano"><b>Pro</b><br>100 músicas - R$70<button onclick="Blindadas.contratarPlano('pro')">Contratar</button></div>
+    <div class="plano"><b>Premium</b><br>200 músicas - R$100<button onclick="Blindadas.contratarPlano('premium')">Contratar</button></div>
+    <button onclick="window.location.href='planos.html'">Saiba mais</button>
+    <button onclick="Blindadas.fecharPlanos()">Fechar</button>
+  </div>
+</div>
+
+<!-- INTERESSE -->
+<div class="modal-interesse" id="modalInteresse">
+  <div class="box">
+    <h3>Tenho Interesse</h3>
+    <input type="text" id="interesseNome" placeholder="Nome">
+    <input type="email" id="interesseEmail" placeholder="E-mail">
+    <input type="text" id="interesseTelefone" placeholder="Telefone">
+    <textarea id="interesseMensagem" placeholder="Mensagem"></textarea>
+    <div style="margin:10px 0;">
+      <label><input type="checkbox" id="optContratar"> Contratar Show</label><br>
+      <label><input type="checkbox" id="optReservar"> Reservar Música</label><br>
+      <label><input type="checkbox" id="optAgendar"> Agendar Reunião</label>
+    </div>
+    <button id="btnEnviarInteresse">Enviar</button>
+    <button onclick="fecharInteresse()">Cancelar</button>
+  </div>
+</div>
+
+<!-- LEITURA DE MENSAGEM -->
+<div class="modal-mensagem" id="modalMensagem">
+  <div class="box">
+    <h3>Mensagem Recebida</h3>
+    <div id="detalhesMensagem"></div>
+    <button onclick="fecharMensagem()">Fechar</button>
+    <button id="btnExcluirMensagem">Excluir</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const supabaseClient = supabase.createClient(
+  "https://mhvcyeiwupgreuiqilkt.supabase.co",
+  "sb_publishable_uT6SfDEyOShsI7zrPJJCDA_vyqm0Eka"
+);
+
+const Blindadas = {
+  carregarPerfil: async function(){
+    const { data } = await supabaseClient.from("perfil").select("*").eq("id",1).single();
+    if(!data) return;
+    document.querySelector(".nome-artista").innerText = data.nome || "Artista";
+    document.getElementById("contatoTelefone").innerText = data.contato || "-";
+    document.getElementById("contatoInstagram").innerText = data.instagram || "-";
+    document.getElementById("contatoEmail").innerText = data.email || "-";
+    document.getElementById("contatoSpotify").innerText = data.spotify || "-";
+    document.getElementById("contatoTiktok").innerText = data.tiktok || "-";
+    if(data.capa_url){
+      document.getElementById("capaArtista").innerHTML =
+        `<img src="${data.capa_url}" style="width:100%;height:100%;object-fit:cover">`;
+    }
+  },
+  carregarMusicas: async function(){
+    const { data } = await supabaseClient.from('musicas').select('*');
+    const container = document.querySelector(".players");
+    container.innerHTML = "";
+    data.forEach(m=>{
+      container.innerHTML += `
+        <div class="player-card" data-genero="${m.genero}">
+          <img src="${m.capa_url}">
+          <h3>${m.nome}</h3>
+          <p>${m.artista}</p>
+          <audio controls src="${m.mp3_url}"></audio>
+          <div>
+            <small>Liberação: ${m.valor_liberacao || "A combinar"}</small><br>
+            <small>Exclusivo: ${m.valor_exclusivo || "A combinar"}</small>
+          </div>
+          <button onclick="abrirInteresse('${m.id}')">Tenho Interesse</button>
+        </div>
+      `;
+    });
+    aplicarFiltro();
+  },
+  abrirVIP: function(){ let senha = prompt("Digite a senha VIP:"); if(senha==="0000"){window.location.href="vip.html"}else{alert("Senha incorreta");}},
+  abrirPlanos: function(){ document.getElementById("modalPlanos").style.display="flex"; },
+  fecharPlanos: function(){ document.getElementById("modalPlanos").style.display="none"; },
+  contratarPlano: function(plano){ window.location.href="pagamento.html?plano="+plano; }
+};
+
+// INIT
+Blindadas.carregarPerfil();
+Blindadas.carregarMusicas();
+
+// FILTROS
+const botoes = document.querySelectorAll(".filtros button");
+botoes.forEach(btn=>{
+  btn.classList.remove("off");
+  btn.addEventListener("click",()=>{ btn.classList.toggle("off"); aplicarFiltro(); });
+});
+function aplicarFiltro(){
+  const ativos = Array.from(botoes).filter(b=>!b.classList.contains("off")).map(b=>b.dataset.genero);
+  document.querySelectorAll(".player-card").forEach(card=>{
+    card.style.display = (ativos.length===0 || ativos.includes(card.dataset.genero)) ? "block" : "none";
+  });
+}
+
+// SINO E MENSAGENS
+let contNotificacao = 0;
+let mensagens = [];
+const btnNotificacao = document.getElementById("btnNotificacao");
+const notificacoesContainer = document.getElementById("notificacoesContainer");
+
+btnNotificacao.addEventListener("click", ()=>{
+  if(notificacoesContainer.style.display==="none" || notificacoesContainer.style.display===""){
+    notificacoesContainer.style.display="block";
+  } else {
+    notificacoesContainer.style.display="none";
+  }
+});
+
+function atualizarNotificacoes(){
+  notificacoesContainer.innerHTML = "";
+  mensagens.forEach((m, idx)=>{
+    const div = document.createElement("div");
+    div.style.background = "rgba(255,255,255,0.05)";
+    div.style.padding = "8px";
+    div.style.marginBottom = "5px";
+    div.style.borderRadius = "5px";
+    div.style.display = "flex";
+    div.style.justifyContent = "space-between";
+    div.style.alignItems = "center";
+
+    const conteudo = document.createElement("div");
+    conteudo.style.flex = "1";
+    conteudo.style.cursor = "pointer";
+    conteudo.innerHTML = `
+      <b>${m.nome}</b><br>
+      <small>${m.email}</small><br>
+      <small>${m.telefone}</small><br>
+      <small>${m.mensagem}</small>
+      <small>Opções: ${m.contratar ? "Contratar Show, " : ""}${m.reservar ? "Reservar, " : ""}${m.agendar ? "Agendar" : ""}</small>
+    `;
+    conteudo.addEventListener("click",()=>mostrarMensagem(idx));
+
+    const btnExcluir = document.createElement("button");
+    btnExcluir.innerText = "🗑️";
+    btnExcluir.style.background = "red";
+    btnExcluir.style.color = "white";
+    btnExcluir.style.border = "none";
+    btnExcluir.style.borderRadius = "5px";
+    btnExcluir.style.padding = "4px 6px";
+    btnExcluir.style.cursor = "pointer";
+    btnExcluir.addEventListener("click",(e)=>{
+      e.stopPropagation();
+      excluirMensagem(idx);
+    });
+
+    div.appendChild(conteudo);
+    div.appendChild(btnExcluir);
+    notificacoesContainer.appendChild(div);
+  });
+  btnNotificacao.innerText = `🔔 ${contNotificacao}`;
+}
+
+function mostrarMensagem(idx){
+  const m = mensagens[idx];
+  const div = document.getElementById("detalhesMensagem");
+  div.innerHTML = `
+    <b>Nome:</b> ${m.nome}<br>
+    <b>E-mail:</b> ${m.email}<br>
+    <b>Telefone:</b> ${m.telefone}<br>
+    <b>Mensagem:</b> ${m.mensagem}<br>
+    <b>Opções:</b> ${m.contratar ? "Contratar Show, " : ""}${m.reservar ? "Reservar, " : ""}${m.agendar ? "Agendar" : ""}
+  `;
+  document.getElementById("modalMensagem").style.display="flex";
+  document.getElementById("btnExcluirMensagem").onclick = ()=>{
+    excluirMensagem(idx);
+    fecharMensagem();
+  };
+}
+
+function excluirMensagem(idx){
+  mensagens.splice(idx,1);
+  contNotificacao--;
+  atualizarNotificacoes();
+}
+
+function fecharMensagem(){ document.getElementById("modalMensagem").style.display="none"; }
+
+// INTERESSE
+let musicaSelecionada = null;
+function abrirInteresse(idMusica){ musicaSelecionada = idMusica; document.getElementById("modalInteresse").style.display="flex"; }
+function fecharInteresse(){
+  musicaSelecionada = null;
+  document.getElementById("modalInteresse").style.display="none";
+  document.getElementById("interesseNome").value="";
+  document.getElementById("interesseEmail").value="";
+  document.getElementById("interesseTelefone").value="";
+  document.getElementById("interesseMensagem").value="";
+  document.getElementById("optContratar").checked=false;
+  document.getElementById("optReservar").checked=false;
+  document.getElementById("optAgendar").checked=false;
+}
+
+document.getElementById("btnEnviarInteresse").addEventListener("click", ()=>{
+  const nome = document.getElementById("interesseNome").value;
+  const email = document.getElementById("interesseEmail").value;
+  if(!nome||!email){ alert("Preencha pelo menos Nome e E-mail"); return; }
+  mensagens.push({
+    musica: musicaSelecionada,
+    nome,
+    email,
+    telefone: document.getElementById("interesseTelefone").value,
+    mensagem: document.getElementById("interesseMensagem").value,
+    contratar: document.getElementById("optContratar").checked,
+    reservar: document.getElementById("optReservar").checked,
+    agendar: document.getElementById("optAgendar").checked
+  });
+  contNotificacao++;
+  atualizarNotificacoes();
+  fecharInteresse();
+});
+</script>

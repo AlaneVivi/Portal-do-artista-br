@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal do Artista</title>
+
+<style>
+body {
+  font-family: Arial;
+  background:#111;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+form {
+  background:#222;
+  padding:25px;
+  border-radius:10px;
+  text-align:center;
+  width:320px;
+}
+
+input {
+  display:block;
+  margin:10px auto;
+  padding:8px;
+  border-radius:5px;
+  border:none;
+  width:90%;
+}
+
+button {
+  padding:8px 15px;
+  border:none;
+  border-radius:5px;
+  background:#f5d76e;
+  color:#000;
+  cursor:pointer;
+  width:100%;
+  font-weight:bold;
+}
+
+p {
+  font-size:0.9rem;
+}
+
+.switch {
+  margin-top:10px;
+  cursor:pointer;
+  color:#f5d76e;
+  text-decoration:underline;
+}
+
+h1 {
+  margin-bottom:5px;
+  color:#f5d76e;
+}
+
+h2 {
+  margin-top:0;
+  opacity:0.8;
+}
+
+#msg {
+  color:red;
+  font-size:0.9rem;
+  margin-top:5px;
+}
+</style>
+</head>
+
+<body>
+
+<form id="authForm">
+  <h1>Portal do Artista</h1>
+  <h2>Bem-vindo!</h2>
+
+  <input type="email" id="email" placeholder="Email" required>
+  <input type="password" id="senha" placeholder="Senha" required>
+
+  <button type="submit" id="submitBtn">Entrar</button>
+
+  <p id="msg"></p>
+
+  <p class="switch" id="toggleForm">
+    Ainda não tem conta? Cadastre-se
+  </p>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://mhvcyeiwupgreuiqilkt.supabase.co";
+const SUPABASE_KEY = "sb_publishable_uT6SfDEyOShsI7zrPJJCDA_vyqm0Eka";
+
+// 🔥 CORREÇÃO PRINCIPAL
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let isLogin = true;
+
+const submitBtn = document.getElementById("submitBtn");
+const toggleForm = document.getElementById("toggleForm");
+const msg = document.getElementById("msg");
+const subTitle = document.querySelector("h2");
+
+toggleForm.addEventListener("click", () => {
+  isLogin = !isLogin;
+
+  msg.textContent = "";
+  msg.style.color = "red";
+
+  if(isLogin){
+    submitBtn.textContent = "Entrar";
+    toggleForm.textContent = "Ainda não tem conta? Cadastre-se";
+    subTitle.textContent = "Bem-vindo!";
+  } else {
+    submitBtn.textContent = "Cadastrar";
+    toggleForm.textContent = "Já tem conta? Faça login";
+    subTitle.textContent = "Crie sua conta";
+  }
+});
+
+document.getElementById("authForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+
+  msg.textContent = "";
+  msg.style.color = "red";
+
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+
+  try {
+
+    if(isLogin){
+      // LOGIN
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password: senha
+      });
+
+      if(error){
+        msg.textContent = error.message;
+        return;
+      }
+
+      // LOGIN OK
+      window.location.href = "painel.html";
+
+    } else {
+      // CADASTRO
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password: senha
+      });
+
+      if(error){
+        msg.textContent = error.message;
+        return;
+      }
+
+      msg.style.color = "lightgreen";
+      msg.textContent = "Cadastro feito com sucesso! Agora faça login.";
+
+      isLogin = true;
+      submitBtn.textContent = "Entrar";
+      toggleForm.textContent = "Ainda não tem conta? Cadastre-se";
+      subTitle.textContent = "Bem-vindo!";
+    }
+
+  } catch(err) {
+    msg.textContent = "Erro inesperado: " + err.message;
+  }
+});
+</script>
+
+</body>
+</html>?

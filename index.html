@@ -6,6 +6,10 @@
 <title>Portal do Artista</title>
 
 <style>
+
+/* =========================
+   🎨 BASE / GLOBAL
+========================= */
 body {
     font-family: Arial, sans-serif;
     margin:0;
@@ -13,6 +17,10 @@ body {
     background: linear-gradient(135deg,#000,#0a0a0a,#1a1a00);
     color:white;
 }
+
+/* =========================
+   👤 PERFIL
+========================= */
 .header { text-align:center; padding:20px; }
 .nome-artista { color:#f5d76e; font-size:2.5rem; }
 
@@ -53,12 +61,16 @@ body {
 }
 
 .contato-card span { display:block; line-height:1.2; }
+
 .instagram { color:#E1306C; }
 .spotify { color:#1DB954; }
 .whatsapp { color:#25D366; }
 .email { color:#f5d76e; }
 .tiktok { color:#fff; }
 
+/* =========================
+   🎵 FILTROS
+========================= */
 .filtros { text-align:center; margin:20px 0; }
 .filtros button {
     margin:5px;
@@ -72,6 +84,9 @@ body {
 }
 .filtros button.off { background:#333; color:#999; }
 
+/* =========================
+   🎶 MÚSICAS
+========================= */
 .players {
     display:flex; flex-wrap:wrap; justify-content:center;
     gap:20px; margin-bottom:50px;
@@ -83,6 +98,9 @@ body {
 }
 .player-card img { width:100%; height:150px; object-fit:cover; }
 
+/* =========================
+   🔔 SISTEMA / NOTIFICAÇÕES
+========================= */
 #btnNotificacao {
     position:fixed;
     top:10px;
@@ -96,7 +114,6 @@ body {
     cursor:pointer;
 }
 
-/* Container de notificações do sino */
 #notificacoesContainer {
     display: none;
     position: fixed;
@@ -111,7 +128,9 @@ body {
     z-index:9999;
 }
 
-/* Modais */
+/* =========================
+   🧾 MODAIS
+========================= */
 .modal-planos, .modal-interesse, .modal-mensagem {
     display:none;
     position:fixed;
@@ -164,14 +183,18 @@ body {
 
 .modal-interesse textarea, .modal-mensagem textarea { resize:none; }
 .modal-mensagem textarea { background:#222; color:white; padding:8px; margin:5px 0; border-radius:5px; border:none;}
+
 </style>
 </head>
 
 <body>
 
+<!-- =========================
+     👤 PERFIL
+========================= -->
 <div class="header">
   <h1>Portal do Artista</h1>
-  <h2 class="profissao">Compositor</h2>
+  <h2 class="profissao" id="profissao"></h2>
   <h1 class="nome-artista">Alan Ribeiro</h1>
 </div>
 
@@ -191,6 +214,9 @@ body {
   <div class="contato-card tiktok">🎶 <span id="contatoTiktok"></span></div>
 </div>
 
+<!-- =========================
+     🎵 FILTROS
+========================= -->
 <div class="filtros">
   <button data-genero="Sertanejo">Sertanejo</button>
   <button data-genero="Piseiro">Piseiro</button>
@@ -206,10 +232,20 @@ body {
   <button data-genero="Reggae">Reggae</button>
 </div>
 
+<!-- =========================
+     🎶 MÚSICAS
+========================= -->
 <div class="players"></div>
 
+<!-- =========================
+     🔔 SISTEMA
+========================= -->
 <button id="btnNotificacao">🔔 0</button>
 <div id="notificacoesContainer"></div>
+
+<!-- =========================
+     🧾 MODAIS
+========================= -->
 
 <!-- PLANOS -->
 <div class="modal-planos" id="modalPlanos">
@@ -243,7 +279,7 @@ body {
   </div>
 </div>
 
-<!-- LEITURA DE MENSAGEM -->
+<!-- MENSAGEM -->
 <div class="modal-mensagem" id="modalMensagem">
   <div class="box">
     <h3>Mensagem Recebida</h3>
@@ -253,32 +289,50 @@ body {
   </div>
 </div>
 
+<!-- =========================
+     ⚙️ JS - SISTEMA
+========================= -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+
+/* =========================
+   ⚙️ CONFIG / SUPABASE
+========================= */
 const supabaseClient = supabase.createClient(
   "https://mhvcyeiwupgreuiqilkt.supabase.co",
   "sb_publishable_uT6SfDEyOShsI7zrPJJCDA_vyqm0Eka"
 );
 
+/* =========================
+   👤 PERFIL + 🎶 MÚSICAS
+========================= */
 const Blindadas = {
+
   carregarPerfil: async function(){
     const { data } = await supabaseClient.from("perfil").select("*").eq("id",1).single();
     if(!data) return;
+
     document.querySelector(".nome-artista").innerText = data.nome || "Artista";
+    document.getElementById("profissao").innerText = data.profissao || "";  
     document.getElementById("contatoTelefone").innerText = data.contato || "-";
     document.getElementById("contatoInstagram").innerText = data.instagram || "-";
     document.getElementById("contatoEmail").innerText = data.email || "-";
     document.getElementById("contatoSpotify").innerText = data.spotify || "-";
     document.getElementById("contatoTiktok").innerText = data.tiktok || "-";
+
     if(data.capa_url){
       document.getElementById("capaArtista").innerHTML =
         `<img src="${data.capa_url}" style="width:100%;height:100%;object-fit:cover">`;
     }
   },
+
   carregarMusicas: async function(){
     const { data } = await supabaseClient.from('musicas').select('*');
     const container = document.querySelector(".players");
+
     container.innerHTML = "";
+
     data.forEach(m=>{
       container.innerHTML += `
         <div class="player-card" data-genero="${m.genero}">
@@ -294,34 +348,62 @@ const Blindadas = {
         </div>
       `;
     });
+
     aplicarFiltro();
   },
-  abrirVIP: function(){ let senha = prompt("Digite a senha VIP:"); if(senha==="0000"){window.location.href="vip.html"}else{alert("Senha incorreta");}},
-  abrirPlanos: function(){ document.getElementById("modalPlanos").style.display="flex"; },
-  fecharPlanos: function(){ document.getElementById("modalPlanos").style.display="none"; },
-  contratarPlano: function(plano){ window.location.href="pagamento.html?plano="+plano; }
+
+  abrirVIP: function(){
+    let senha = prompt("Digite a senha VIP:");
+    if(senha==="0000"){ window.location.href="vip.html"; }
+    else{ alert("Senha incorreta"); }
+  },
+
+  abrirPlanos: function(){
+    document.getElementById("modalPlanos").style.display="flex";
+  },
+
+  fecharPlanos: function(){
+    document.getElementById("modalPlanos").style.display="none";
+  },
+
+  contratarPlano: function(plano){
+    window.location.href="pagamento.html?plano="+plano;
+  }
+
 };
 
-// INIT
-Blindadas.carregarPerfil();
-Blindadas.carregarMusicas();
-
-// FILTROS
+/* =========================
+   🎵 FILTROS
+========================= */
 const botoes = document.querySelectorAll(".filtros button");
+
 botoes.forEach(btn=>{
   btn.classList.remove("off");
-  btn.addEventListener("click",()=>{ btn.classList.toggle("off"); aplicarFiltro(); });
+  btn.addEventListener("click",()=>{
+    btn.classList.toggle("off");
+    aplicarFiltro();
+  });
 });
+
 function aplicarFiltro(){
-  const ativos = Array.from(botoes).filter(b=>!b.classList.contains("off")).map(b=>b.dataset.genero);
+  const ativos = Array.from(botoes)
+    .filter(b=>!b.classList.contains("off"))
+    .map(b=>b.dataset.genero);
+
   document.querySelectorAll(".player-card").forEach(card=>{
-    card.style.display = (ativos.length===0 || ativos.includes(card.dataset.genero)) ? "block" : "none";
+    card.style.display =
+      (ativos.length===0 || ativos.includes(card.dataset.genero))
+      ? "block"
+      : "none";
   });
 }
 
-// SINO E MENSAGENS
+/* =========================
+   🔔 NOTIFICAÇÕES
+========================= */
 let contNotificacao = 0;
 let mensagens = [];
+
 const btnNotificacao = document.getElementById("btnNotificacao");
 const notificacoesContainer = document.getElementById("notificacoesContainer");
 
@@ -335,8 +417,10 @@ btnNotificacao.addEventListener("click", ()=>{
 
 function atualizarNotificacoes(){
   notificacoesContainer.innerHTML = "";
+
   mensagens.forEach((m, idx)=>{
     const div = document.createElement("div");
+
     div.style.background = "rgba(255,255,255,0.05)";
     div.style.padding = "8px";
     div.style.marginBottom = "5px";
@@ -348,6 +432,7 @@ function atualizarNotificacoes(){
     const conteudo = document.createElement("div");
     conteudo.style.flex = "1";
     conteudo.style.cursor = "pointer";
+
     conteudo.innerHTML = `
       <b>${m.nome}</b><br>
       <small>${m.email}</small><br>
@@ -355,9 +440,11 @@ function atualizarNotificacoes(){
       <small>${m.mensagem}</small>
       <small>Opções: ${m.contratar ? "Contratar Show, " : ""}${m.reservar ? "Reservar, " : ""}${m.agendar ? "Agendar" : ""}</small>
     `;
+
     conteudo.addEventListener("click",()=>mostrarMensagem(idx));
 
     const btnExcluir = document.createElement("button");
+
     btnExcluir.innerText = "🗑️";
     btnExcluir.style.background = "red";
     btnExcluir.style.color = "white";
@@ -365,6 +452,7 @@ function atualizarNotificacoes(){
     btnExcluir.style.borderRadius = "5px";
     btnExcluir.style.padding = "4px 6px";
     btnExcluir.style.cursor = "pointer";
+
     btnExcluir.addEventListener("click",(e)=>{
       e.stopPropagation();
       excluirMensagem(idx);
@@ -372,14 +460,18 @@ function atualizarNotificacoes(){
 
     div.appendChild(conteudo);
     div.appendChild(btnExcluir);
+
     notificacoesContainer.appendChild(div);
   });
+
   btnNotificacao.innerText = `🔔 ${contNotificacao}`;
 }
 
 function mostrarMensagem(idx){
   const m = mensagens[idx];
+
   const div = document.getElementById("detalhesMensagem");
+
   div.innerHTML = `
     <b>Nome:</b> ${m.nome}<br>
     <b>E-mail:</b> ${m.email}<br>
@@ -387,7 +479,9 @@ function mostrarMensagem(idx){
     <b>Mensagem:</b> ${m.mensagem}<br>
     <b>Opções:</b> ${m.contratar ? "Contratar Show, " : ""}${m.reservar ? "Reservar, " : ""}${m.agendar ? "Agendar" : ""}
   `;
+
   document.getElementById("modalMensagem").style.display="flex";
+
   document.getElementById("btnExcluirMensagem").onclick = ()=>{
     excluirMensagem(idx);
     fecharMensagem();
@@ -400,27 +494,45 @@ function excluirMensagem(idx){
   atualizarNotificacoes();
 }
 
-function fecharMensagem(){ document.getElementById("modalMensagem").style.display="none"; }
+function fecharMensagem(){
+  document.getElementById("modalMensagem").style.display="none";
+}
 
-// INTERESSE
+/* =========================
+   💬 INTERESSE
+========================= */
 let musicaSelecionada = null;
-function abrirInteresse(idMusica){ musicaSelecionada = idMusica; document.getElementById("modalInteresse").style.display="flex"; }
+
+function abrirInteresse(idMusica){
+  musicaSelecionada = idMusica;
+  document.getElementById("modalInteresse").style.display="flex";
+}
+
 function fecharInteresse(){
   musicaSelecionada = null;
+
   document.getElementById("modalInteresse").style.display="none";
+
   document.getElementById("interesseNome").value="";
   document.getElementById("interesseEmail").value="";
   document.getElementById("interesseTelefone").value="";
   document.getElementById("interesseMensagem").value="";
+
   document.getElementById("optContratar").checked=false;
   document.getElementById("optReservar").checked=false;
   document.getElementById("optAgendar").checked=false;
 }
 
 document.getElementById("btnEnviarInteresse").addEventListener("click", ()=>{
+
   const nome = document.getElementById("interesseNome").value;
   const email = document.getElementById("interesseEmail").value;
-  if(!nome||!email){ alert("Preencha pelo menos Nome e E-mail"); return; }
+
+  if(!nome||!email){
+    alert("Preencha pelo menos Nome e E-mail");
+    return;
+  }
+
   mensagens.push({
     musica: musicaSelecionada,
     nome,
@@ -431,8 +543,20 @@ document.getElementById("btnEnviarInteresse").addEventListener("click", ()=>{
     reservar: document.getElementById("optReservar").checked,
     agendar: document.getElementById("optAgendar").checked
   });
+
   contNotificacao++;
+
   atualizarNotificacoes();
+
   fecharInteresse();
 });
+
+/* =========================
+   🚀 INIT
+========================= */
+Blindadas.carregarPerfil();
+Blindadas.carregarMusicas();
+
 </script>
+</body>
+</html>

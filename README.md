@@ -1,0 +1,56 @@
+## 🚀 Sobre o Projeto
+
+O **Portal do Artista** foi desenvolvido com o objetivo de oferecer uma plataforma profissional, organizada e estratégica para o mercado musical.
+
+A proposta é atender dois públicos principais:
+
+### 🎼 Compositores
+
+Oferecer um espaço dedicado para apresentação de músicas de forma profissional, permitindo:
+
+* Organização do catálogo musical
+* Apresentação com identidade visual
+* Definição de valores (liberação e exclusividade)
+* Facilidade de contato com interessados
+
+Tudo isso pensado para valorizar a obra e facilitar negociações com artistas e produtores.
+
+---
+
+### 🎤 Intérpretes (Cantores, Duplas, Bandas)
+
+Disponibilizar um perfil completo e profissional para apresentação do trabalho artístico, incluindo:
+
+* Portfólio musical organizado
+* Identidade visual personalizada
+* Informações de contato centralizadas
+* Exposição estratégica para o mercado
+
+---
+
+### 🤝 Conexão com o Mercado
+
+O portal também funciona como ponte entre artistas e oportunidades, sendo ideal para:
+
+* Investidores
+* Produtores musicais
+* Contratantes de shows
+* Profissionais do mercado
+
+Com um sistema que facilita o interesse direto em músicas ou serviços.
+
+---
+
+### 💰 Modelo de Planos
+
+O sistema conta com planos escaláveis, adaptados ao nível e potencial de cada artista, permitindo:
+
+* Crescimento dentro da plataforma
+* Maior exposição conforme o plano
+* Estrutura proporcional ao momento da carreira
+
+---
+
+### 🎯 Objetivo Final
+
+Criar um ambiente onde artistas possam se apresentar de forma **extremamente organizada, profissional e valorizada**, aumentando suas chances de negociação, visibilidade e crescimento no mercad

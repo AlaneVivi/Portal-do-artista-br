@@ -42,7 +42,7 @@ body { font-family: Arial,sans-serif; margin:0; padding:0; background:linear-gra
 </div>
 
 <div class="top-buttons">
-    <button onclick="alert('Login não disponível no demo')">Login</button>
+   <button onclick="irLogin()">Login</button>
     <button onclick="alert('VIP não disponível no demo')">VIP</button>
     <button onclick="abrirPlanosDemo()">Planos</button>
 </div>
@@ -83,15 +83,35 @@ body { font-family: Arial,sans-serif; margin:0; padding:0; background:linear-gra
 <div class="modal-planos" id="modalPlanos">
   <div class="box">
     <h3>Planos Demo</h3>
-    <div class="plano"><b>Free</b><br>2 músicas - R$0 <button onclick="alert('Plano Free')">Contratar</button></div>
-    <div class="plano"><b>Básico</b><br>20 músicas - R$20 <button onclick="alert('Plano Básico')">Contratar</button></div>
-    <div class="plano"><b>Intermediário</b><br>70 músicas - R$50 <button onclick="alert('Plano Intermediário')">Contratar</button></div>
-    <div class="plano"><b>Pro</b><br>100 músicas - R$70 <button onclick="alert('Plano Pro')">Contratar</button></div>
-    <div class="plano"><b>Premium</b><br>200 músicas - R$100 <button onclick="alert('Plano Premium')">Contratar</button></div>
+
+    <div class="plano">
+      <b>Free</b><br>2 músicas - R$0 
+      <button onclick="contratarPlano('free')">Contratar</button>
+    </div>
+
+    <div class="plano">
+      <b>Básico</b><br>20 músicas - R$20 
+      <button onclick="contratarPlano('basico')">Contratar</button>
+    </div>
+
+    <div class="plano">
+      <b>Intermediário</b><br>70 músicas - R$50 
+      <button onclick="contratarPlano('intermediario')">Contratar</button>
+    </div>
+
+    <div class="plano">
+      <b>Pro</b><br>100 músicas - R$70 
+      <button onclick="contratarPlano('pro')">Contratar</button>
+    </div>
+
+    <div class="plano">
+      <b>Premium</b><br>200 músicas - R$100 
+      <button onclick="contratarPlano('premium')">Contratar</button>
+    </div>
+
     <button onclick="fecharPlanosDemo()">Fechar</button>
   </div>
 </div>
-
 <!-- Modal Interesse -->
 <div class="modal-interesse" id="modalInteresse">
   <div class="box">
@@ -106,8 +126,16 @@ body { font-family: Arial,sans-serif; margin:0; padding:0; background:linear-gra
 </div>
 
 <script>
+  
+  function contratarPlano(plano){
+  window.location.href = "pagamento.html?plano=" + plano;
+}
+  
 // URL fixa da arte
 const arteDemo = "https://i.postimg.cc/Dwx4CWGt/1001220151-(4).jpg";
+  
+  
+  
 
 // Dados demo 8 músicas com áudio demo e valores
 const musicasDemo = [

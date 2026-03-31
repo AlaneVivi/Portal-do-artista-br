@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal do Artista</title>
+  
 
 <style>
 
@@ -202,6 +203,7 @@ body {
     <button onclick="window.location.href='login.html'">Login</button>
     <button onclick="Blindadas.abrirVIP()">VIP</button>
     <button onclick="Blindadas.abrirPlanos()">Planos</button>
+    <button onclick="logout()">Sair</button>
 </div>
 
 <div class="capa-artista" id="capaArtista"></div>
@@ -294,7 +296,21 @@ body {
 ========================= -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+}
+
 <script>
+  /* 🔥 LOGOUT GLOBAL (CORRIGIDO) */
+window.logout = async function(){
+  try{
+    await supabaseClient.auth.signOut();
+  }catch(e){
+    console.log("Erro no logout:", e);
+  }
+
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = "portaldemo.html";
+};
 
 /* =========================
    ⚙️ CONFIG / SUPABASE
